@@ -2,9 +2,7 @@ const CSS = `
 :host {
     position: relative;
 }
-.visible {
-    display: block;
-}
+
 .select {
     display: none;
     cursor: pointer;
@@ -70,8 +68,9 @@ class InputAddress extends HTMLElement {
     }
 
     child.addEventListener("keyup", () => {
-      if (text.trim().length > 2) {
-        this.work(child.value);
+      const text = child.value.trim();
+      if (text.length > 2) {
+        this.work(text);
       }
     });
 
@@ -97,9 +96,9 @@ class InputAddress extends HTMLElement {
   }
 
   formateAddress(address) {
-    return `${address.street.name} ${
+    return `${address.street} ${
       address.number !== "" ? " " + address.number + ", " : ""
-    }${address.street.postCode} ${address.street.municipality}`;
+    }${address.postCode} ${address.municipality}`;
   }
 
   async work(text) {
@@ -109,7 +108,7 @@ class InputAddress extends HTMLElement {
       const options = this.options;
       addresses.forEach((address, i) => {
         if (i < options.length) {
-          options[i].innerText = formateAddress(address);
+          options[i].innerText = this.formateAddress(address);
         } else {
           console.log("exesives response from API", i, address);
         }
@@ -126,8 +125,10 @@ class InputAddress extends HTMLElement {
     } else {
       if (Array.isArray(response.result)) {
         return response.result.map((r) => ({
-          street: r.address.street,
+          street: r.address.street.name,
           number: r.address.number,
+          postCode: r.address.street.postCode,
+          municipality: r.address.street.municipality,
         }));
       }
     }
