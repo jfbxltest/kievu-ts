@@ -67,14 +67,10 @@ class InputAddress extends HTMLElement {
       throw new Error('pas possible: il faut un élément <input type="text"> ');
     }
 
-    child.addEventListener("keyup", () => {
-      const text = child.value.trim();
-      if (text.length > 2) {
-        this.work(text);
-      }
-    });
+    child.addEventListener("keyup", () => this.work(child.value));
 
     this.elementSelect.addEventListener("click", (e) => {
+      console.log(e.target.innerHTML, e.target.innerText);
       child.value = e.target.innerText;
       child.dataset.address = e.target.dataset.address;
       this.hideSelect();
@@ -103,57 +99,61 @@ class InputAddress extends HTMLElement {
 
     if (search && typeof search == "string") {
       search.replace(/ +/g, " ");
+      const finded = [];
       const searchs = search.split(" ");
       searchs.forEach((s) => {
-        result = result.replace(
-          new RegExp(s, "i"),
-          (m) => `<strong>${m}</strong>`
-        );
+        result = result.replace(new RegExp(s, "i"), (m) => `<%%>${m}</%%>`);
       });
+      result = result.replaceAll("%%", "strong");
     }
     return result;
   }
 
-  async work(text) {
-    this.callApiWithtext(text).then((addresses) => {
-      if (addresses) {
-        this.showSelect();
-        const options = this.elementOptions;
-        addresses.forEach((address, i) => {
-          if (i < options.length) {
-            options[i].innerHTML = this.formateAddress(address, text);
-            options[i].dataset.address = JSON.stringify(address);
-            options[i].style.display = "bloc";
-          } else {
-            console.log("exesives response from API", i, address);
-          }
-        });
-        // cache les options vides
-        for (let i = addresses.length; i < options.length; i++) {
-          options[i].style.display = "";
-        }
-      }
-    });
+  async work(search) {
+    search = search.trim();
+    if (search.length > 2) {
+      this.callApiWithCallback(search, this.setAddresses.bind(this));
+    }
   }
 
-  async callApiWithtext(text) {
-    return fetch(getQueryAddressURL(text))
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.error === true) {
-          console.log("error API", result);
-        } else if (Array.isArray(result.result)) {
-          return result.result.map((r) => ({
-            id: r.address.street.id,
-            street: r.address.street.name,
-            number: r.address.number,
-            postCode: r.address.street.postCode,
-            municipality: r.address.street.municipality,
-            coordonates: r.point,
-          }));
+  setAddresses(addresses, search) {
+    if (addresses) {
+      this.showSelect();
+      const options = this.elementOptions;
+      for (let i = 0; i < addresses.length; i++) {
+        if (i < options.length) {
+          options[i].innerHTML = this.formateAddress(addresses[i], search);
+          options[i].dataset.address = JSON.stringify(addresses[i]);
+          options[i].style.display = "bloc";
+        } else {
+          console.log("excessive response from API", i, addresses[i]);
         }
-      })
-      .catch((error) => console.log(error));
+      }
+      // cache les options vides
+      for (let i = addresses.length; i < options.length; i++) {
+        options[i].style.display = "";
+      }
+    }
+  }
+
+  async callApiWithCallback(search, callback) {
+    const response = await fetch(getQueryAddressURL(search));
+    const results = await response.json();
+
+    if (results.error === true) {
+      console.log("error API", results);
+    } else if (Array.isArray(results.result)) {
+      const addresses = results.result.map((r) => ({
+        id: r.address.street.id,
+        street: r.address.street.name,
+        number: r.address.number,
+        postCode: r.address.street.postCode,
+        municipality: r.address.street.municipality,
+        coordonates: r.point,
+      }));
+
+      callback(addresses, search);
+    }
   }
 }
 
