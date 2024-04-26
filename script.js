@@ -74,64 +74,86 @@ class InputAddress extends HTMLElement {
       }
     });
 
-    this.select.addEventListener("click", (e) => {
+    this.elementSelect.addEventListener("click", (e) => {
       child.value = e.target.innerText;
+      child.dataset.address = e.target.dataset.address;
       this.hideSelect();
     });
   }
 
-  get select() {
+  get elementSelect() {
     return this.shadowRoot.querySelector(".select");
   }
-  get options() {
+  get elementOptions() {
     return this.shadowRoot.querySelectorAll(".option");
   }
 
   showSelect() {
-    this.select.style.display = "block";
+    this.elementSelect.style.display = "block";
   }
 
   hideSelect() {
-    this.select.style = "";
+    this.elementSelect.style = "";
   }
 
-  formateAddress(address) {
-    return `${address.street} ${
-      address.number !== "" ? " " + address.number + ", " : ""
-    }${address.postCode} ${address.municipality}`;
+  formateAddress({ street, number, postCode, municipality }, search) {
+    let result = `${street} ${
+      number !== "" ? " " + number + ", " : ""
+    }${postCode} ${municipality}`;
+
+    if (search && typeof search == "string") {
+      search.replace(/ +/g, " ");
+      const searchs = search.split(" ");
+      searchs.forEach((s) => {
+        result = result.replace(
+          new RegExp(s, "i"),
+          (m) => `<strong>${m}</strong>`
+        );
+      });
+    }
+    return result;
   }
 
   async work(text) {
-    const addresses = await this.callApiWithtext(text);
-    if (addresses) {
-      this.showSelect();
-      const options = this.options;
-      addresses.forEach((address, i) => {
-        if (i < options.length) {
-          options[i].innerText = this.formateAddress(address);
-        } else {
-          console.log("exesives response from API", i, address);
+    this.callApiWithtext(text).then((addresses) => {
+      if (addresses) {
+        this.showSelect();
+        const options = this.elementOptions;
+        addresses.forEach((address, i) => {
+          if (i < options.length) {
+            options[i].innerHTML = this.formateAddress(address, text);
+            options[i].dataset.address = JSON.stringify(address);
+            options[i].style.display = "bloc";
+          } else {
+            console.log("exesives response from API", i, address);
+          }
+        });
+        // cache les options vides
+        for (let i = addresses.length; i < options.length; i++) {
+          options[i].style.display = "";
         }
-      });
-    }
+      }
+    });
   }
 
   async callApiWithtext(text) {
-    const JSON = await fetch(getQueryAddressURL(text));
-    const response = await JSON.json();
-
-    if (response.error === true) {
-      console.log("error API", response);
-    } else {
-      if (Array.isArray(response.result)) {
-        return response.result.map((r) => ({
-          street: r.address.street.name,
-          number: r.address.number,
-          postCode: r.address.street.postCode,
-          municipality: r.address.street.municipality,
-        }));
-      }
-    }
+    return fetch(getQueryAddressURL(text))
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.error === true) {
+          console.log("error API", result);
+        } else if (Array.isArray(result.result)) {
+          return result.result.map((r) => ({
+            id: r.address.street.id,
+            street: r.address.street.name,
+            number: r.address.number,
+            postCode: r.address.street.postCode,
+            municipality: r.address.street.municipality,
+            coordonates: r.point,
+          }));
+        }
+      })
+      .catch((error) => console.log(error));
   }
 }
 
