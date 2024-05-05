@@ -1,36 +1,71 @@
+</html>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="style.css">
-   
+    <title>Trottoirs-libres</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- <script src="js/location.js"></script> -->
+    <script src="js/input-address.js" type="module" defer></script>
 </head>
 <body>
-    <div class="container">
-        <h1>Trottoirs Sales</h1>
- 
-    <input-address name="abcde">
-        <input type="text" name="adresse" id="adresse-id" placeholder="Ex. Avenue des Arts 21, 1000 Bruxelles">
-    </input-address> 
+<div class="container">
+    <h2>Formulaire de Signalement</h2>
+    <form action="#" method="post">
+        <div class="form-group">
+            <label>
+                Rue
+                <input-address>
+                <input type="text" name="adresse" id="adresse-id" placeholder="(utiliser la position actuelle)" autocomplete="off">
+                </input-address>
+            </label>
+            <label>Numéro
+                <input type="text"  autocomplete="off" data-address="number">
+            </label>
+            <label>Code Postal
+                <input type="text"  disabled autocomplete="off" data-address="post-code">
+            </label>
+            <label>Commune
+                <input type="text" disabled autocomplete="off" data-address="municipality">
+            </label>
+        </div>
+        <div class="form-group">
+            <label for="type-encombrement">Type d'encombrement :</label>
+            <!-- <input type="text" name="type-encombrement" list="list-encombrants" placeholder="Sélectionner le type d'encombrement"> -->
+            <!-- <input  autocomplete="off" role="combobox" list="list-encombrants" id="input" name="browsers" placeholder="Select your fav browser"> -->
+            <!-- <datalist id="list-encombrants" role="listbox"> -->
+                <!-- Ajouter ici les options de type d'encombrement -->
+                <select name="" id="">
 
-    <!--
-        <div class="element">
-            <input type="text" id="test-id" placeholder="Ex. Avenue des Arts 21, 1000 Bruxelles">
-            <div class="select">
-                <div class="option">lorem ipsum 1</div>
-                <div class="option">lorem ipsum 2</div>
-                <div class="option">lorem ipsum 3</div>
-                <div class="option">lorem ipsum 4</div>
-                <div class="option">lorem ipsum 5</div>
+                    <option value="travaux">travaux</option>
+                    <option value="terrasse commerce">terrasse commerce</option>
+                <option value="poubelles">poubelles</option>
+                <option value="encombrants">encombrants</option>
+                <option value="trous">trous</option>
+                <option value="trottoir abimé">trottoir abimé</option>
+                <option value="véhicule">véhicule</option>
+                <option value="panneau">panneau</option>
+            </select>
+            <!-- </datalist> -->
+        </div>
+        <div class="form-group">
+            <label for="coordonnees">Coordonnées du piéton :</label>
+            <input type="text" id="nom" name="nom" placeholder="Nom">
+            <input type="text" id="prenom" name="prenom" placeholder="Prénom">
+            <input type="email" id="email" name="email" placeholder="E-mail">
+            <div class="checkbox-group">
+                <input type="checkbox" id="autorisation" name="autorisation">
+                <label for="autorisation">J'accepte de conserver mes coordonnées dans votre base de données</label>
             </div>
         </div>
-    -->
-    </div>
-     <script src="script.js"></script>
-    
+        <div class="form-group">
+            <label for="photo">Photo de l'incivilité :</label>
+            <input type="file" id="photo" name="photo">
+        </div>
+        <button type="submit">Envoyer</button>
+    </form>
+</div>
+
 </body>
-
-
 </html>
