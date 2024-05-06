@@ -1,4 +1,9 @@
-import { getAddressesFromText, getAddressFromLocation } from "./location.js";
+import {
+	getAddressesFromText,
+	getAddressFromLocation,
+	getAddresseFromParts,
+} from "./location.js";
+import sheet from "./input-address.css" assert { type: "css" };
 /**
  *  Les appels à l'API de geolocalisation doivent être externalisés du composant
  *
@@ -10,59 +15,13 @@ import { getAddressesFromText, getAddressFromLocation } from "./location.js";
  *
  */
 
-const CSS = `
-:host {
-    position: relative;
-		display: inline-block;
-}
-
-#select-id {
-    display: none;
-    cursor: pointer;
-    position: absolute;
-    width: 100%;
-    padding: 5px 0;
-    margin: 2px 0 0;
-    font-size: 14px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 4px;
-    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-}
-.option {
-    padding: 3px 20px;
-    font-weight: 400;
-    color: #333;
-}
-.option:hover {
-    background-color: #801337;
-    color: white;
-}
-.option>span {
-  font-style: italic;
-  font-weight: 500;
-  color: #939292;
-  font-size: 12px;
-  white-space: nowrap;
-}
-.address {
-	display: flex;
-}
-.street {
-	flex-grow: 1;
-}
-button {
-  width: 32px;
-  font-weight: 900;
-}
-`;
 const HTML = `
-    <style>${CSS}</style>
     <div class="address">
 			<div class="street">
 					<slot></slot>
+					<div class="loader">
+						<span class="spiner"></span>
+					</div>
 			</div>
 			<button id='action-id'></button>
     </div>
@@ -86,6 +45,7 @@ class InputAddress extends HTMLElement {
 	constructor() {
 		super();
 		const shadow = this.attachShadow({ mode: "open" });
+		shadow.adoptedStyleSheets = [sheet];
 		shadow.innerHTML = HTML;
 	}
 
@@ -115,7 +75,7 @@ class InputAddress extends HTMLElement {
 		});
 
 		this.elementSelect.addEventListener("click", (e) => {
-			this.updateAdress(e.target.address);
+			this.updateAdress(e.target.address || e.target.parentNode.address);
 			this.hideSelect();
 		});
 
@@ -127,6 +87,10 @@ class InputAddress extends HTMLElement {
 			}
 		});
 
+		this.elementNumber.addEventListener("change", () =>
+			this.validationAdress()
+		);
+
 		this.resetAddress();
 	}
 
@@ -137,6 +101,8 @@ class InputAddress extends HTMLElement {
 		this.elementNumber.value = "";
 		this.elementPostCode.value = "";
 		this.elementMunicipality.value = "";
+		this.elementPostCode.disabled = false;
+		this.elementMunicipality.disabled = false;
 		this.elementInput.focus();
 	}
 	updateAdress(address) {
@@ -146,6 +112,8 @@ class InputAddress extends HTMLElement {
 		this.elementNumber.value = address.number ?? "";
 		this.elementPostCode.value = address.postCode ?? "";
 		this.elementMunicipality.value = address.municipality ?? "";
+		this.elementPostCode.disabled = true;
+		this.elementMunicipality.disabled = true;
 		if (this.elementNumber.value === "") this.elementNumber.focus();
 	}
 
@@ -155,6 +123,13 @@ class InputAddress extends HTMLElement {
 
 	hideSelect() {
 		this.elementSelect.style = "";
+	}
+
+	showLoader() {
+		this.shadowRoot.querySelector(".loader").style.display = "flex";
+	}
+	hideLoader() {
+		this.shadowRoot.querySelector(".loader").style = "";
 	}
 
 	async work(search) {
@@ -167,6 +142,20 @@ class InputAddress extends HTMLElement {
 			} else {
 				this.setListAddresses(addresses, search);
 			}
+		}
+	}
+
+	async validationAdress() {
+		const adress = {
+			street: this.elementInput.value,
+			number: this.elementNumber.value,
+			postcode: this.elementPostCode.value,
+			municipality: this.elementMunicipality.value,
+		};
+		const result = await getAddresseFromParts(adress);
+		if (result && result[0]) {
+			this.elementPostCode.value = result[0].postCode;
+			this.elementMunicipality.value = result[0].municipality;
 		}
 	}
 
@@ -203,7 +192,7 @@ class InputAddress extends HTMLElement {
 			for (let i = 0; i < addresses.length; i++) {
 				if (i < options.length) {
 					options[i].innerHTML = formateAddress(addresses[i]);
-					options[i].address = addresses[i];
+					options[i].address = { ...addresses[i] };
 					options[i].style.display = "bloc";
 				} else {
 					console.log("excessive response from API", i, addresses[i]);
@@ -222,10 +211,13 @@ class InputAddress extends HTMLElement {
 			if (address && address[0]) {
 				this.updateAdress(address[0]);
 			}
+			this.hideLoader();
 		};
 
-		const onError = (error) => console.log(error);
-
+		const onError = (error) => {
+			console.log(error);
+			this.hideLoader();
+		};
 		const options = {
 			enableHighAccuracy: true,
 			timeout: 15000,
@@ -234,6 +226,7 @@ class InputAddress extends HTMLElement {
 
 		if ("geolocation" in navigator) {
 			/* geolocation is available */
+			this.showLoader();
 			navigator.geolocation.getCurrentPosition(onSuccess, onError, options);
 		} else {
 			/* geolocation IS NOT available */
