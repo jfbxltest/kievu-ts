@@ -12,7 +12,7 @@ async function callApiWithObject(endPoint, object) {
 	const request = url + encodeURIComponent(JSON.stringify(object));
 	const response = await fetch(request);
 	const result = await response.json();
-	console.log(result);
+
 	if (Array.isArray(result.result)) {
 		return result.result.map((r) => parser(r));
 	} else {
@@ -27,6 +27,26 @@ export async function getAddressesFromText(text, language = "fr") {
 		spatialReference: 4326,
 	};
 	return await callApiWithObject("getaddresses", object);
+}
+
+export async function getAddresseFromParts(
+	{ street, number, postcode, municipality },
+	language = "fr"
+) {
+	console.log("get parts ************");
+	const object = {
+		language,
+		address: {
+			street: {
+				name: street,
+				postcode,
+				municipality,
+			},
+			number,
+		},
+		spatialReference: 4326,
+	};
+	return await callApiWithObject("getaddressesfields", object);
 }
 
 export async function getAddressFromLocation(location, language = "fr") {

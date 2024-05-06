@@ -13,22 +13,15 @@
 <div class="container">
     <h2>Formulaire de Signalement</h2>
     <form action="#" method="post">
-        <div class="form-group">
-            <label>
-                Rue
-                <input-address>
-                <input type="text" name="adresse" id="adresse-id" placeholder="(utiliser la position actuelle)" autocomplete="off">
-                </input-address>
-            </label>
-            <label>Numéro
-                <input type="text"  autocomplete="off" data-address="number">
-            </label>
-            <label>Code Postal
-                <input type="text"  disabled autocomplete="off" data-address="post-code">
-            </label>
-            <label>Commune
-                <input type="text" disabled autocomplete="off" data-address="municipality">
-            </label>
+        <div class="form-group" disabled>
+            <label for="adresse">Rue</label>
+            <input-address><input type="text" name="adresse" id="adresse-id" placeholder="(utiliser la position actuelle)" autocomplete="off"></input-address>
+            <label for="numero">Numéro</label>
+            <input type="text" name="numero"  autocomplete="off" data-address="number">
+            <label>Code Postal</label>
+            <input type="text" autocomplete="off" data-address="post-code">
+            <label>Commune</label>
+            <input type="text" autocomplete="off" data-address="municipality">
         </div>
         <div class="form-group">
             <label for="type-encombrement">Type d'encombrement :</label>
