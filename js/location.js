@@ -1,8 +1,10 @@
 import {
 	getAddressesFromText,
-	getAddressFromLocation,
+	// getAddressFromLocation,
 	getAddresseFromParts,
 } from "./location-IRIS.js";
+
+import { getAddressFromLocation } from "./Location-OSM.js";
 
 window.getAddressesFromText = getAddressesFromText;
 window.getAddressFromLocation = getAddressFromLocation;

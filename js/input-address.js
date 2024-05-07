@@ -14,7 +14,7 @@ import sheet from "./input-address.css" assert { type: "css" };
  * Renvoit une adresse à partir d'une coordonnée
  *
  */
-
+``;
 const HTML = `
     <div class="address">
 			<div class="street">
@@ -95,7 +95,6 @@ class InputAddress extends HTMLElement {
 			if (this.address) {
 				this.validationAdress();
 			}
-			console.log(e);
 		});
 
 		this.resetAddress();
@@ -167,8 +166,11 @@ class InputAddress extends HTMLElement {
 				if (result[0].adNc) {
 					this.elementPostCode.value = result[0].postCode;
 					this.elementMunicipality.value = result[0].municipality;
+					this.elementNumber.nextElementSibling.classList.remove("show");
 				} else {
-					this.elementNumber.style.background = "red";
+					this.elementNumber.nextElementSibling.classList.add("show");
+					this.elementNumber.focus();
+					this.elementNumber.select();
 				}
 			}
 		} else {
@@ -225,8 +227,11 @@ class InputAddress extends HTMLElement {
 	async makeGeoPosition() {
 		const onSuccess = async (pos) => {
 			const address = await getAddressFromLocation(pos.coords);
+			console.log("getCurrentPosition, address", address);
 			if (address && address[0]) {
 				this.updateAdress(address[0]);
+			} else if (address) {
+				this.updateAdress(address);
 			}
 			this.hideLoader();
 		};

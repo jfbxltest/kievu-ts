@@ -52,7 +52,8 @@ input-address {
 
 input[type="text"],
 input[type="email"],
-select {
+select,
+.error {
 	width: 100%;
 	height: 34px;
 	padding: 6px 12px;
@@ -64,7 +65,18 @@ select {
 	border: 1px solid #ccc;
 	border-radius: 0;
 }
-
+.error {
+	border-radius: 3px;
+	margin-top: 3px;
+	background-color: lightcoral;
+	transform: translate(10px, -10px);
+	/* opacity: 0; */
+	display: none;
+}
+.error.show {
+	display: block;
+	/* opacity: 1; */
+}
 /* input:focus {
     background-color: lightcoral;
     border: none;
