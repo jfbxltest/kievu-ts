@@ -1,8 +1,8 @@
-import {
-	getAddressesFromText,
-	getAddressFromLocation,
-	getAddresseFromParts,
-} from "./location.js";
+// import {
+// 	getAddressesFromText,
+// 	getAddressFromLocation,
+// 	getAddresseFromParts,
+// } from "./location-IRIS.js";
 import sheet from "./input-address.css" assert { type: "css" };
 /**
  *  Les appels à l'API de geolocalisation doivent être externalisés du composant
@@ -42,6 +42,7 @@ const HTML = `
 		`;
 
 class InputAddress extends HTMLElement {
+	address;
 	constructor() {
 		super();
 		const shadow = this.attachShadow({ mode: "open" });
@@ -90,9 +91,12 @@ class InputAddress extends HTMLElement {
 			}
 		});
 
-		this.elementNumber.addEventListener("change", () =>
-			this.validationAdress()
-		);
+		this.elementNumber.addEventListener("change", (e) => {
+			if (this.address) {
+				this.validationAdress();
+			}
+			console.log(e);
+		});
 
 		this.resetAddress();
 	}
@@ -106,6 +110,7 @@ class InputAddress extends HTMLElement {
 		this.elementMunicipality.value = "";
 		this.elementPostCode.disabled = false;
 		this.elementMunicipality.disabled = false;
+		// this.elementNumber.disabled = true
 		this.elementInput.focus();
 	}
 	updateAdress(address) {
@@ -118,6 +123,7 @@ class InputAddress extends HTMLElement {
 		this.elementPostCode.disabled = true;
 		this.elementMunicipality.disabled = true;
 		if (this.elementNumber.value === "") this.elementNumber.focus();
+		this.address = address;
 	}
 
 	showSelect() {
@@ -149,21 +155,24 @@ class InputAddress extends HTMLElement {
 	}
 
 	async validationAdress() {
-		const adress = {
+		const address = {
 			street: this.elementInput.value,
 			number: this.elementNumber.value,
 			postcode: this.elementPostCode.value,
 			municipality: this.elementMunicipality.value,
 		};
-		const result = await getAddresseFromParts(adress);
-		console.log(result);
-		if (result && result[0]) {
-			if (result[0].adNc) {
-				this.elementPostCode.value = result[0].postCode;
-				this.elementMunicipality.value = result[0].municipality;
-			} else {
-				this.elementNumber.style.background = "red";
+		if (address.street !== "" && address.number !== "") {
+			const result = await getAddresseFromParts(address);
+			if (result && result[0]) {
+				if (result[0].adNc) {
+					this.elementPostCode.value = result[0].postCode;
+					this.elementMunicipality.value = result[0].municipality;
+				} else {
+					this.elementNumber.style.background = "red";
+				}
 			}
+		} else {
+			console.log("bad address :", address);
 		}
 	}
 
