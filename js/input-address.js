@@ -25,7 +25,7 @@ const HTML = `
 			</div>
 			<button id='action-id'></button>
     </div>
-    <div id="select-id">
+    <div id="select-id" tabindex="0">
         <div class="option"></div>
         <div class="option"></div>
         <div class="option"></div>
@@ -70,8 +70,11 @@ class InputAddress extends HTMLElement {
 			}
 		});
 
-		this.addEventListener("blur", (e) => {
-			this.hideSelect();
+		this.elementInput.addEventListener("blur", (e) => {
+			if (e.relatedTarget !== this) {
+				this.elementInput.value = "";
+				this.hideSelect();
+			}
 		});
 
 		this.elementSelect.addEventListener("click", (e) => {
@@ -153,9 +156,14 @@ class InputAddress extends HTMLElement {
 			municipality: this.elementMunicipality.value,
 		};
 		const result = await getAddresseFromParts(adress);
+		console.log(result);
 		if (result && result[0]) {
-			this.elementPostCode.value = result[0].postCode;
-			this.elementMunicipality.value = result[0].municipality;
+			if (result[0].adNc) {
+				this.elementPostCode.value = result[0].postCode;
+				this.elementMunicipality.value = result[0].municipality;
+			} else {
+				this.elementNumber.style.background = "red";
+			}
 		}
 	}
 

@@ -6,6 +6,7 @@ async function callApiWithObject(endPoint, object) {
 		postCode: r.address.street.postCode,
 		municipality: r.address.street.municipality,
 		coordonates: r.point,
+		adNc: r.adNc,
 	});
 
 	const url = `https://geoservices.irisnet.be/localization/Rest/Localize/${endPoint}?json=`;
@@ -13,6 +14,7 @@ async function callApiWithObject(endPoint, object) {
 	const response = await fetch(request);
 	const result = await response.json();
 
+	console.log(result.result);
 	if (Array.isArray(result.result)) {
 		return result.result.map((r) => parser(r));
 	} else {
