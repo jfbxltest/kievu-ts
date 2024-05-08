@@ -3,7 +3,7 @@
 // 	getAddressFromLocation,
 // 	getAddresseFromParts,
 // } from "./location-IRIS.js";
-import sheet from "./input-address.css" assert { type: "css" };
+import sheet from "./input-address.css" with { type: "css" };
 /**
  *  Les appels à l'API de geolocalisation doivent être externalisés du composant
  *
@@ -42,7 +42,7 @@ const HTML = `
 		`;
 
 class InputAddress extends HTMLElement {
-	address;
+	onAddress = false;
 	constructor() {
 		super();
 		const shadow = this.attachShadow({ mode: "open" });
@@ -92,7 +92,7 @@ class InputAddress extends HTMLElement {
 		});
 
 		this.elementNumber.addEventListener("change", (e) => {
-			if (this.address) {
+			if (this.onAddress) {
 				this.validationAdress();
 			}
 		});
@@ -111,6 +111,8 @@ class InputAddress extends HTMLElement {
 		this.elementMunicipality.disabled = false;
 		// this.elementNumber.disabled = true
 		this.elementInput.focus();
+		this.onAddress = false
+		
 	}
 	updateAdress(address) {
 		this.buttonAction.innerText = "X";
@@ -122,7 +124,7 @@ class InputAddress extends HTMLElement {
 		this.elementPostCode.disabled = true;
 		this.elementMunicipality.disabled = true;
 		if (this.elementNumber.value === "") this.elementNumber.focus();
-		this.address = address;
+		this.onAddress = true;
 	}
 
 	showSelect() {
@@ -167,6 +169,7 @@ class InputAddress extends HTMLElement {
 					this.elementPostCode.value = result[0].postCode;
 					this.elementMunicipality.value = result[0].municipality;
 					this.elementNumber.nextElementSibling.classList.remove("show");
+					
 				} else {
 					this.elementNumber.nextElementSibling.classList.add("show");
 					this.elementNumber.focus();
@@ -224,14 +227,23 @@ class InputAddress extends HTMLElement {
 		}
 	}
 
+	/**
+	 * 
+	 * getAddressFromLocation() from OpenStreetMap return a object
+	 * getAddressFromLocation() from geoservices.irisnet return a array
+	 * 
+	 */
 	async makeGeoPosition() {
+		
 		const onSuccess = async (pos) => {
 			const address = await getAddressFromLocation(pos.coords);
 			console.log("getCurrentPosition, address", address);
-			if (address && address[0]) {
-				this.updateAdress(address[0]);
-			} else if (address) {
-				this.updateAdress(address);
+			if (address) {
+				if (Array.isArray(address)) {
+					this.updateAdress(address[0]);
+				} else if (address) {
+					this.updateAdress(address);
+				}
 			}
 			this.hideLoader();
 		};
@@ -252,6 +264,7 @@ class InputAddress extends HTMLElement {
 			navigator.geolocation.getCurrentPosition(onSuccess, onError, options);
 		} else {
 			/* geolocation IS NOT available */
+			alert("la géo-localisation n'est pas disponible")
 		}
 	}
 }

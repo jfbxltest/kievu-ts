@@ -11,11 +11,12 @@ body {
 .container {
 	max-width: 600px;
 	margin: 0 auto;
-	padding: 1rem;
-	height: 100vh;
+	/* padding: 1rem; */
+	/* height: 100vh; */
 	background-color: white;
-	border-radius: 8px;
+	/* border-radius: 8px; */
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	padding-bottom: 4rem;
 }
 .form {
 	padding: 2rem;
@@ -27,6 +28,7 @@ h1 {
 form {
 	/* max-width: 200px; */
 	max-width: 300px;
+	margin: 0 auto;
 }
 
 p * {
@@ -40,6 +42,17 @@ p * {
 
 .form-group {
 	width: 100%;
+	margin: 0.5rem auto;
+	padding: 1rem;
+	padding-bottom: 2rem;
+	border: 1px solid #ccc;
+	border: 1px solid rgba(0, 0, 0, 0.15);
+	border-radius: 4px;
+	-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+}
+legend {
+	margin: 1rem auto;
 }
 /* .form-group > label {
 	display: block;
@@ -50,6 +63,9 @@ input-address {
 	width: 100%;
 }
 
+option {
+	color: #801337;
+}
 input[type="text"],
 input[type="email"],
 select,
@@ -70,6 +86,7 @@ select,
 	margin-top: 3px;
 	background-color: lightcoral;
 	transform: translate(10px, -10px);
+	transition: display 2s;
 	/* opacity: 0; */
 	display: none;
 }

@@ -11,7 +11,7 @@ export async function getAddressFromLocation(location, language = "fr") {
 	const parser = (address) => ({
 		street: address.road,
 		number: address.house_number,
-		postCode: address.postCode,
+		postCode: address.postcode,
 		municipality: address.town,
 		coordonates: { x: longitude, y: latitude },
 	});
@@ -22,6 +22,7 @@ export async function getAddressFromLocation(location, language = "fr") {
 	try {
 		const response = await fetch(url);
 		result = await response.json();
+		console.log("OSM", result);
 		return parser(result.address);
 	} catch (e) {
 		console.log(e);

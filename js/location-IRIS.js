@@ -77,7 +77,7 @@ async function callApiWithObject(endPoint, object) {
 		municipality: result.address.street.municipality,
 		coordonates: result.point,
 		adNc: result.adNc,
-		qualification: result.qualificationCode,
+		qualification: result.qualificationText,
 	});
 
 	const url = `https://geoservices.irisnet.be/localization/Rest/Localize/${endPoint}?json=`;

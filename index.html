@@ -13,7 +13,8 @@
 <div class="container">
     <h2>Formulaire de Signalement</h2>
     <form action="#" method="post">
-        <div class="form-group" disabled>
+        <div class="form-group">
+					<legend>Adresse du signalement</legend>
             <label for="adresse">Rue</label>
             <input-address><input type="text" name="adresse" id="adresse-id" placeholder="(utiliser la position actuelle)" autocomplete="off"></input-address>
             <label for="numero">Numéro</label>
@@ -25,15 +26,10 @@
             <input type="text" autocomplete="off" data-address="municipality">
         </div>
         <div class="form-group">
-            <label for="type-encombrement">Type d'encombrement :</label>
-            <!-- <input type="text" name="type-encombrement" list="list-encombrants" placeholder="Sélectionner le type d'encombrement"> -->
-            <!-- <input  autocomplete="off" role="combobox" list="list-encombrants" id="input" name="browsers" placeholder="Select your fav browser"> -->
-            <!-- <datalist id="list-encombrants" role="listbox"> -->
-                <!-- Ajouter ici les options de type d'encombrement -->
-                <select name="" id="">
-
-                    <option value="travaux">travaux</option>
-                    <option value="terrasse commerce">terrasse commerce</option>
+					<legend>Type d'encombrement</legend>
+              <select name="" id="">
+                <option value="travaux">travaux</option>
+                <option value="terrasse commerce">terrasse commerce</option>
                 <option value="poubelles">poubelles</option>
                 <option value="encombrants">encombrants</option>
                 <option value="trous">trous</option>
@@ -41,13 +37,15 @@
                 <option value="véhicule">véhicule</option>
                 <option value="panneau">panneau</option>
             </select>
-            <!-- </datalist> -->
         </div>
         <div class="form-group">
-            <label for="coordonnees">Coordonnées du piéton :</label>
-            <input type="text" id="nom" name="nom" placeholder="Nom">
-            <input type="text" id="prenom" name="prenom" placeholder="Prénom">
-            <input type="email" id="email" name="email" placeholder="E-mail">
+						<legend>Coordonnées du piéton</legend>
+            <label for="nom">Nom</label>
+            <input type="text" id="nom" name="nom">
+            <label for="prenom">Prénom</label>
+            <input type="text" id="prenom" name="prenom">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email">
             <div class="checkbox-group">
                 <input type="checkbox" id="autorisation" name="autorisation">
                 <label for="autorisation">J'accepte de conserver mes coordonnées dans votre base de données</label>
@@ -60,8 +58,6 @@
         <button type="submit">Envoyer</button>
     </form>
 </div>
-<script>
-    
-</script>
+
 </body>
 </html>
